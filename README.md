@@ -13,7 +13,7 @@
 # 特别说明
 - 默认使用`mybatis`作为 `ORM`,所以需要引入mybatis`相关依赖
 - 如果不使用`mybatis` 必须实现 `ISysLogService`接口并且必须实现`getSysLogUserInfoDTO`、`getSysLogUserInfoByToken`以及`saveSysLog`方法，根据需求编写接口逻辑代码
-- 如果使用`mybatis`, 又想记录操作人那么需要实现 `ISysLogService`接口并实现`getSysLogUserInfoDTO`和`getSysLogUserInfoByToken`接口返回登录用户信息即可
+- 如果使用`mybatis`, 又想记录操作人那么需要实现 `ISysLogService`接口并实现`getSysLogUserInfoDTO`和`getSysLogUserInfoByToken`接口返回登录用户信息即可，否则只需要引入依赖，启动类上添加`@EnableSysLog`注解即可启用日志插件，在想要记录日志的方法上添加`@SysLog`注解并填写对应参数即可记录日志
 - `getSysLogUserInfoDTO`是根据请求头获取token再根据token获取登录用户信息（场景：业务接口请求时使用）
 - `getSysLogUserInfoByToken`是根据token来获取登录用户信息（场景：登录成功时调用）与 `recordLogininfor`接口配合使用，先调用`recordLogininfor`，内部实现`recordLogininfor`方法会调用`getSysLogUserInfoByToken`并传递token
 - 登录成功时需要手动调用`recordLogininfor`
@@ -135,3 +135,42 @@ void recordLogininfor(String moduleName,
 ```
 - 如果不实现`ISysLogService`接口,不会记录操作人
 - 如果想自己实现入库逻辑，可实现`saveSysLog`方法，此方法带回日志相关数据
+
+# `@SysLog` 注解,参数如下
+```
+/**
+ * 描述
+ */
+String actionDesc();
+
+/**
+ * 模块
+ *
+ * @return
+ */
+String module();
+
+/**
+ * 日志模块名称(label)
+ */
+String moduleName();
+
+/**
+ * 日志来源
+ *
+ * @return
+ */
+SysLogSourceEnum source() default SysLogSourceEnum.WEB;
+
+/**
+ * 日志类型
+ *
+ * @return
+ */
+SysLogTypeEnum logType() default SysLogTypeEnum.REQUEST;
+
+/**
+ * 业务操作
+ */
+BusinessType businessType() default BusinessType.OTHER;
+```
