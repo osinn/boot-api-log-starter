@@ -28,6 +28,11 @@ public interface SysLogMapper {
             " business_type," +
             " user_id," +
             " account," +
+            " request_uri," +
+            " request_params," +
+            " request_type," +
+            " class_method," +
+            " exception_msg," +
             " nickname ) " +
             "VALUES ( " +
             "#{id}," +
@@ -46,6 +51,11 @@ public interface SysLogMapper {
             " #{businessType}," +
             " #{userId}," +
             " #{account}," +
+            " #{requestUri}," +
+            " #{requestParams}," +
+            " #{requestType}," +
+            " #{classMethod}," +
+            " #{exceptionMsg}," +
             " #{nickname} )")
     void saveSysLog(SysLogEntity sysLogEntity);
 
