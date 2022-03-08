@@ -9,16 +9,18 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gitee.osinn.boot.log.annotation.SysLog;
+import com.gitee.osinn.boot.log.dto.IpInfo;
 import com.gitee.osinn.boot.log.dto.SysLogDTO;
 import com.gitee.osinn.boot.log.entity.base.SysLogSource;
+import com.gitee.osinn.boot.log.starter.Ip2RegionProperties;
+import com.gitee.osinn.boot.log.utils.AddressUtils;
 import lombok.extern.slf4j.Slf4j;
-import net.dreamlu.mica.ip2region.core.Ip2regionSearcher;
-import net.dreamlu.mica.ip2region.core.IpInfo;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,8 +33,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class HandleLogService extends AbstractHandleLogService {
 
+
+    @Autowired(required = false)
+    private Ip2RegionOfSearcher ip2RegionOfSearcher;
+
     @Autowired
-    private Ip2regionSearcher regionSearcher;
+    private Ip2RegionProperties ip2RegionProperties;
 
     @Async
     public void handleLog(JoinPoint joinPoint, SysLogDTO sysLog, String ipAddress, String requestUri, String requestType, String headerUserAgent) {
@@ -47,13 +53,21 @@ public class HandleLogService extends AbstractHandleLogService {
                 add("127.0.0.1");
             }
         };
-        IpInfo ipInfo = null;
-        try {
-            ipInfo = regionSearcher.btreeSearch(ipAddress);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
+
+        String address;
+
+        if (!ip2RegionProperties.isEnabled()) {
+            address = StringUtils.isEmpty(ip2RegionProperties.getIpUrl()) ? "未知" : AddressUtils.getRealAddressByIp(ipAddress);
+        } else {
+            IpInfo ipInfo = null;
+            try {
+                ipInfo = ip2RegionOfSearcher.search(ipAddress);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
+            address = ipInfo == null ? "未知" : ipInfo.getAddressAndIsp().replace("中国", "");
         }
-        String address = ipInfo == null ? "未知" : ipInfo.getAddressAndIsp().replace("中国", "");
+
         ipAddress = LOCAL_HOST_IPs.contains(ipAddress) ? "127.0.0.1" : ipAddress;
         sysLog.setIpAddress(ipAddress);
         sysLog.setIpAddressAttr(address);

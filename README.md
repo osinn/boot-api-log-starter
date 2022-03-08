@@ -9,6 +9,30 @@
     <version>1.0</version>
 </dependency>
 ```
+# application.yml配置
+```
+ip2region:
+  # 是否使用ip2region查询
+  enabled: true
+  # ip2region文件位置
+  dbfile: ip2region/ip2region.db
+  # b-tree算法查询（ b-tree算法、binary算法、memory算法）
+  # 如果不是memory(内存)算法查询，会自动在项目的根目录下创建ip2region文件夹来保存ip2region/ip2region.db文件
+  # 保存ip2region/ip2region.db文件到本地是为了避免非内存查询的时候有些IP查询不到归属信息
+  algorithm: BTREE_SEARCH
+  # 如果不使用ip2region查询，会通过网络以get请求方式查询IP地址信息
+  params: # 请求参数json格式
+    json: true
+  # ip信息查询地址
+  ip-url: http://whois.pconline.com.cn/ipJson.jsp
+```
+# 使用姿势
+- @EnableSysAsyncTask 启动异步并配置线程池
+- @EnableSysLog 在启动类上添加此注解来启用日志服务自动配置
+- @SysLog 在方法上添加此注解拦截请求以便获取请求接口相关数据
+
+## 更新日志
+[CHANGELOG](./CHANGELOG.md)
 
 # 特别说明
 - 默认使用`mybatis`作为 `ORM`,所以需要引入mybatis`相关依赖
@@ -54,11 +78,6 @@ CREATE TABLE `sys_log` (
   KEY `index_log` (`user_id`,`account`,`nickname`,`module`,`source`,`log_type`,`action_desc`,`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统日志';
 ```
-# 使用姿势
-- @EnableSysAsyncTask 启动异步并配置线程池
-- @EnableSysLog 在启动类上添加此注解来启用日志服务自动配置
-- @SysLog 在方法上添加此注解拦截请求以便获取请求接口相关数据
-
 # ISysLogService接口
 #### 接口方法
 ```
@@ -173,4 +192,13 @@ SysLogTypeEnum logType() default SysLogTypeEnum.REQUEST;
  * 业务操作
  */
 BusinessType businessType() default BusinessType.OTHER;
+```
+# 关于ip2region.db查询
+```
+全部的查询客户端单次查询都在0.x毫秒级别，内置了三种查询算法
+
+memory算法：整个数据库全部载入内存，单次查询都在0.1x毫秒内，C语言的客户端单次查询在0.00x毫秒级别。
+binary算法：基于二分查找，基于ip2region.db文件，不需要载入内存，单次查询在0.x毫秒级别。
+b-tree算法：基于btree算法，基于ip2region.db文件，不需要载入内存，单词查询在0.x毫秒级别，比binary算法更快。
+任何客户端b-tree都比binary算法快，当然memory算法固然是最快的！
 ```

@@ -11,8 +11,6 @@ import com.gitee.osinn.boot.log.enums.SysLogStatusEnum;
 import com.gitee.osinn.boot.log.enums.SysLogTypeEnum;
 import com.gitee.osinn.boot.log.mapper.SysLogMapper;
 import com.gitee.osinn.boot.log.utils.SnowflakeIdWorker;
-import net.dreamlu.mica.ip2region.core.Ip2regionSearcher;
-import net.dreamlu.mica.ip2region.core.IpInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -38,7 +36,7 @@ public abstract class AbstractHandleLogService {
     protected SysLogMapper sysLogMapper;
 
     @Autowired
-    protected Ip2regionSearcher regionSearcher;
+    protected Ip2RegionOfSearcher ip2RegionOfSearcher;
 
     @Autowired
     @Lazy
@@ -127,7 +125,7 @@ public abstract class AbstractHandleLogService {
         };
         IpInfo ipInfo = null;
         try {
-            ipInfo = regionSearcher.btreeSearch(ipAddress);
+            ipInfo = ip2RegionOfSearcher.search(ipAddress);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
