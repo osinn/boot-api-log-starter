@@ -14,6 +14,8 @@ import com.gitee.osinn.boot.log.dto.SysLogDTO;
 import com.gitee.osinn.boot.log.entity.base.SysLogSource;
 import com.gitee.osinn.boot.log.starter.Ip2RegionProperties;
 import com.gitee.osinn.boot.log.utils.AddressUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
@@ -24,8 +26,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;

@@ -1,9 +1,10 @@
 package com.gitee.osinn.boot.log.aop;
 
-import cn.hutool.extra.servlet.ServletUtil;
+import cn.hutool.extra.servlet.JakartaServletUtil;
 import com.gitee.osinn.boot.log.dto.SysLogUserInfoDTO;
 import com.gitee.osinn.boot.log.service.HandleLogService;
 import com.gitee.osinn.boot.log.service.ISysLogService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -19,7 +20,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.gitee.osinn.boot.log.dto.SysLogDTO;
 import com.gitee.osinn.boot.log.enums.SysLogStatusEnum;
 
-import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -66,7 +66,7 @@ public class SysLogAspect {
     private void setLog(JoinPoint joinPoint, SysLogStatusEnum sysLogStatusEnum, String exceptionMsg, BigDecimal executionTime) {
         HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
         // 获取IP地址
-        String ipAddress = ServletUtil.getClientIP(request);
+        String ipAddress = JakartaServletUtil.getClientIP(request);
         SysLogDTO sysLog = new SysLogDTO();
         sysLog.setStatus(sysLogStatusEnum);
         sysLog.setExceptionMsg(exceptionMsg);
