@@ -1,12 +1,12 @@
 # boot-api-log-starter
-> Spring boot starter 日志服务自动配置
+> Spring boot3 日志服务自动配置，依赖`Mybatis plus`
 
 # 添加依赖
 ```
 <dependency>
     <groupId>com.gitee.osinn.framework</groupId>
     <artifactId>boot-api-log-starter</artifactId>
-    <version>1.0</version>
+    <version>最新版本</version>
 </dependency>
 ```
 # application.yml配置
